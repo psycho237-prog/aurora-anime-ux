@@ -138,21 +138,19 @@ scene.add(globeGroup)
 // 1. Water Bubble Globe (Physical Material)
 const globeGeo = new THREE.SphereGeometry(1.6, 128, 128)
 const globeMat = new THREE.MeshPhysicalMaterial({
-    color: 0xffffff, // Pure white for clearer glass
-    emissive: 0xaa00ff,
-    emissiveIntensity: 0.1, // Subtle inner glow
-    roughness: 0.0, // Perfectly smooth
-    metalness: 0.1,
-    transmission: 1.0, // Full transmission
+    color: 0xffffff, // Pure white
+    emissive: 0x000000,
+    roughness: 0.0,
+    metalness: 0.0,
+    transmission: 1.0,
     thickness: 1.5,
-    ior: 1.4, // Water-like IOR
+    ior: 1.33, // Water IOR
     clearcoat: 1.0,
     clearcoatRoughness: 0.0,
-    attenuationColor: new THREE.Color(0x00f3ff), // Cyan tint happens inside
-    attenuationDistance: 3.0,
-    transparent: true,
-    opacity: 1.0,
-    side: THREE.DoubleSide
+    attenuationColor: new THREE.Color(0xffffff), // Clear water
+    attenuationDistance: 5.0,
+    transparent: false, // Important: False for transmission to work correctly
+    side: THREE.FrontSide // DoubleSide can cause artifacts with transmission
 })
 const globe = new THREE.Mesh(globeGeo, globeMat)
 globeGroup.add(globe)
