@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aurora Anime</title>
+</head>
+
+<body>
+  <canvas id="experience"></canvas>
+
+  <!-- UI Overlay -->
+  <nav class="ui-layer">
+    <div class="logo">
+      <div class="logo-icon">A</div>
+      <span>AURORA ANIME</span>
+    </div>
+    <div class="menu">
+      <a href="#">HOME</a>
+      <a href="#">SERIES</a>
+      <a href="#">MOVIES</a>
+      <a href="#">MOWS</a>
+      <a href="#">NEWS</a>
+      <a href="#">COMMUNITY</a>
+    </div>
+    <div class="actions">
+      <button>LOGIN</button>
+    </div>
+  </nav>
+
+  <div class="hero ui-layer">
+    <h1>
+      <span class="gradient-text">WHERE STORIES</span>
+      <span class="glow-text">COME TO LIGHT</span>
+    </h1>
+    <p>Dive into an immersive universe of anime. Experience your favorite series like never before with our cutting-edge
+      holographic interface.</p>
+    <button class="cta-btn">EXPLORE THE UNIVERSE</button>
+  </div>
+
+  <!-- Bottom Glass Widgets -->
+  <div class="widgets ui-layer">
+    <!-- New Release Widget -->
+    <div class="glass-card widget-release">
+      <div class="card-header">
+        <span>NEW RELEASE</span>
+      </div>
+      <div class="release-grid">
+        <img src="https://picsum.photos/seed/a/100/100" />
+        <img src="https://picsum.photos/seed/b/100/100" />
+        <img src="https://picsum.photos/seed/c/100/100" />
+        <div class="play-overlay">▶</div>
+      </div>
+    </div>
+
+    <!-- Media Player Widget -->
+    <div class="glass-card widget-player">
+      <div class="player-visual">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+      </div>
+      <div class="player-controls">
+        <div class="progress-bar">
+          <div class="fill"></div>
+        </div>
+        <div class="buttons">
+          <span>◀</span>
+          <span class="play">▶</span>
+          <span>▶</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trending Widget -->
+    <div class="glass-card widget-trending">
+      <div class="card-header">
+        <span>NEW RELEASE</span>
+      </div>
+      <div class="trending-list">
+        <div class="trend-item">
+          <img src="https://picsum.photos/seed/d/50/50" />
+          <div class="info">
+            <h4>MASHLE</h4>
+            <p>Action / Comedy</p>
+          </div>
+        </div>
+        <div class="trend-item">
+          <img src="https://picsum.photos/seed/e/50/50" />
+          <div class="info">
+            <h4>BLUE LOCK</h4>
+            <p>Sports / Thriller</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>

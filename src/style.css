@@ -1,0 +1,395 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+:root {
+    --color-bg: #030014;
+    --color-text: #ffffff;
+    --color-cyan: #00f3ff;
+    --color-violet: #a855f7;
+    --font-ui: 'Inter', system-ui, sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--color-bg);
+    font-family: var(--font-ui);
+    color: var(--color-text);
+}
+
+#experience {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* UI LAYER z-index > canvas */
+.ui-layer {
+    position: relative;
+    z-index: 10;
+    pointer-events: none;
+    /* Layout layer handles clicks via children */
+}
+
+/* NAVBAR */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2.5rem 5%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+nav .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+}
+
+nav .logo-icon {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--color-cyan), var(--color-violet));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    font-weight: 900;
+    border-radius: 6px;
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+}
+
+nav .menu {
+    display: flex;
+    gap: 3rem;
+    pointer-events: auto;
+}
+
+nav .menu a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: all 0.3s;
+}
+
+nav .menu a:hover {
+    color: var(--color-cyan);
+    text-shadow: 0 0 8px var(--color-cyan);
+}
+
+nav .actions button {
+    pointer-events: auto;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    padding: 0.8rem 2.5rem;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+nav .actions button:hover {
+    border-color: var(--color-cyan);
+    background: rgba(0, 243, 255, 0.1);
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+}
+
+/* HERO SECTION - Precise Positioning */
+.hero {
+    position: absolute;
+    top: 48%;
+    left: 8%;
+    /* Stick to left */
+    transform: translateY(-50%);
+    max-width: 500px;
+    pointer-events: none;
+}
+
+.hero h1 {
+    font-size: 4.5rem;
+    line-height: 1.05;
+    margin: 0 0 2rem 0;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+/* Gradient Text for "WHERE STORIES" (Upper part) */
+.gradient-text {
+    display: block;
+    background: linear-gradient(90deg, #fff, var(--color-cyan));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* Glowing Text for "COME TO LIGHT" */
+.glow-text {
+    display: block;
+    color: #fff;
+    text-shadow: 0 0 20px rgba(0, 243, 255, 0.4), 0 0 40px rgba(0, 243, 255, 0.2);
+}
+
+.hero p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+    border-left: 3px solid var(--color-cyan);
+    padding-left: 1.5rem;
+    background: linear-gradient(90deg, rgba(0, 243, 255, 0.05), transparent);
+}
+
+.cta-btn {
+    pointer-events: auto;
+    background: transparent;
+    border: 1px solid var(--color-cyan);
+    color: var(--color-cyan);
+    padding: 1rem 2rem;
+    font-weight: 800;
+    font-size: 0.9rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.15);
+    transition: all 0.3s;
+}
+
+.cta-btn:hover {
+    background: var(--color-cyan);
+    color: #000;
+    box-shadow: 0 0 40px rgba(0, 243, 255, 0.6);
+}
+
+/* WIDGETS (Bottom Layer) */
+.widgets {
+    position: absolute;
+    bottom: 2rem;
+    left: 4rem;
+    right: 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    pointer-events: none;
+    /* Container passes clicks */
+    perspective: 1000px;
+    /* 3D Perspective for tilted panels */
+}
+
+.glass-card {
+    background: rgba(10, 10, 30, 0.4);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 243, 255, 0.2);
+    border-radius: 16px;
+    padding: 1.5rem;
+    pointer-events: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s;
+    /* The Signature Tilted Look */
+    transform-style: preserve-3d;
+    transform: rotateX(10deg) scale(0.95);
+}
+
+.glass-card:hover {
+    border-color: var(--color-cyan);
+    transform: rotateX(0deg) scale(1.0);
+    background: rgba(10, 10, 30, 0.6);
+}
+
+.card-header span {
+    font-size: 0.7rem;
+    color: var(--color-cyan);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    display: block;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.5rem;
+}
+
+/* 1. New Release (Left) */
+.widget-release {
+    width: 300px;
+    transform-origin: bottom left;
+}
+
+.release-grid {
+    display: flex;
+    gap: 10px;
+    position: relative;
+}
+
+.release-grid img {
+    width: 80px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+    opacity: 0.7;
+    transition: 0.3s;
+}
+
+.release-grid img:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* 2. Player (Center) */
+.widget-player {
+    width: 340px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background: rgba(0, 0, 0, 0.6);
+    border-top: 2px solid var(--color-cyan);
+}
+
+.player-visual {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.wave {
+    width: 4px;
+    height: 100%;
+    background: var(--color-cyan);
+    animation: wave 1s infinite;
+}
+
+.wave:nth-child(2) {
+    animation-delay: 0.1s;
+    height: 60%;
+}
+
+.wave:nth-child(3) {
+    animation-delay: 0.2s;
+    height: 80%;
+}
+
+@keyframes wave {
+
+    0%,
+    100% {
+        transform: scaleY(0.5);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: scaleY(1);
+        opacity: 1;
+    }
+}
+
+.player-controls .progress-bar {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.player-controls .fill {
+    width: 60%;
+    height: 100%;
+    background: var(--color-cyan);
+    box-shadow: 0 0 10px var(--color-cyan);
+}
+
+.player-controls .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.play {
+    color: var(--color-cyan);
+    text-shadow: 0 0 10px var(--color-cyan);
+}
+
+
+/* 3. Trending (Right) */
+.widget-trending {
+    width: 280px;
+    transform-origin: bottom right;
+}
+
+.trend-item {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+    align-items: center;
+}
+
+.trend-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--color-cyan);
+}
+
+.trend-item h4 {
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.trend-item p {
+    margin: 0;
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+    .widgets {
+        flex-direction: column;
+        align-items: center;
+        bottom: 1rem;
+        left: 1rem;
+        right: 1rem;
+        gap: 1rem;
+        display: none;
+        /* Hide complex widgets on mobile to save space/perf? Or stack them? */
+        /* Reference implies desktop view. Let's hide text widgets and keep player or just stack. */
+        /* Let's keep it clean for mobile. */
+    }
+
+    .hero {
+        left: 5%;
+        top: 40%;
+        width: 90%;
+    }
+
+    .hero h1 {
+        font-size: 3rem;
+    }
+
+    nav {
+        padding: 1.5rem;
+    }
+
+    nav .menu {
+        display: none;
+        /* Hamburger would be better but KISS */
+    }
+}
