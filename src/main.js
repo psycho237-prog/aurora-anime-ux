@@ -2,6 +2,7 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import gsap from 'gsap'
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
 
 // --- SCENE SETUP ---
 const scene = new THREE.Scene()
@@ -20,6 +21,10 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)) // Optimize for p
 // Use ACES Filmic for that cinematic contrast
 renderer.toneMapping = THREE.ACESFilmicToneMapping
 renderer.outputColorSpace = THREE.SRGBColorSpace
+
+// Environment for Glass Reflections
+const pmremGenerator = new THREE.PMREMGenerator(renderer)
+scene.environment = pmremGenerator.fromScene(new RoomEnvironment(renderer), 0.04).texture
 
 const controls = new OrbitControls(camera, renderer.domElement)
 controls.enableDamping = true
@@ -133,26 +138,28 @@ scene.add(globeGroup)
 // 1. Water Bubble Globe (Physical Material)
 const globeGeo = new THREE.SphereGeometry(1.6, 128, 128)
 const globeMat = new THREE.MeshPhysicalMaterial({
-    color: 0x220033, // Deep Violet base
-    emissive: 0x440055,
-    emissiveIntensity: 0.1,
-    roughness: 0.1,
+    color: 0xffffff, // Pure white for clearer glass
+    emissive: 0xaa00ff,
+    emissiveIntensity: 0.1, // Subtle inner glow
+    roughness: 0.0, // Perfectly smooth
     metalness: 0.1,
-    transmission: 1.0, // Glass-like transmission
-    thickness: 2.0, // Volume thickness
-    ior: 1.5, // Refraction index
+    transmission: 1.0, // Full transmission
+    thickness: 1.5,
+    ior: 1.4, // Water-like IOR
     clearcoat: 1.0,
-    clearcoatRoughness: 0.1,
-    attenuationColor: new THREE.Color(0x00f3ff), // Cyan tint inside
-    attenuationDistance: 5.0,
+    clearcoatRoughness: 0.0,
+    attenuationColor: new THREE.Color(0x00f3ff), // Cyan tint happens inside
+    attenuationDistance: 3.0,
+    transparent: true,
+    opacity: 1.0,
     side: THREE.DoubleSide
 })
 const globe = new THREE.Mesh(globeGeo, globeMat)
 globeGroup.add(globe)
 
 // 2. Wireframe Overlay (Holographic Grid) inside
-const gridGeo = new THREE.WireframeGeometry(new THREE.SphereGeometry(1.58, 32, 32))
-const gridMat = new THREE.LineBasicMaterial({ color: 0x00f3ff, transparent: true, opacity: 0.15 })
+const gridGeo = new THREE.WireframeGeometry(new THREE.SphereGeometry(1.58, 64, 64))
+const gridMat = new THREE.LineBasicMaterial({ color: 0x00f3ff, transparent: true, opacity: 0.1 })
 const grid = new THREE.LineSegments(gridGeo, gridMat)
 globeGroup.add(grid)
 // [Deleted "core" mesh for transparency]
@@ -160,12 +167,12 @@ globeGroup.add(grid)
 
 // --- CURVED CARDS ---
 const cardsData = [
-    { title: 'KAIJU NO.8', desc: 'Action', angle: 0, y: 0.8, img: 'https://picsum.photos/seed/kaiju/800/500', category: 'SERIES' },
-    { title: 'SOLO LEVELING', desc: 'Fantasy', angle: 1.0, y: 0.1, img: 'https://picsum.photos/seed/solo/800/500', category: 'SERIES' },
-    { title: 'FRIEREN', desc: 'Adventure', angle: 2.1, y: -0.7, img: 'https://picsum.photos/seed/frieren/800/500', category: 'SERIES' },
-    { title: 'CHAINSAW MAN', desc: 'Dark/Movie', angle: 3.2, y: 0.9, img: 'https://picsum.photos/seed/csm/800/500', category: 'MOVIES' },
-    { title: 'OCULUS', desc: 'Cyberpunk', angle: 4.5, y: -0.4, img: 'https://picsum.photos/seed/oculus/800/500', category: 'MOVIES' },
-    { title: 'ONE PIECE', desc: 'Epic', angle: 5.5, y: 0.3, img: 'https://picsum.photos/seed/onepiece/800/500', category: 'SERIES' },
+    { title: 'F.M.A. BROTHERHOOD', desc: 'Adventure', angle: 0, y: 0.8, img: 'https://image.tmdb.org/t/p/w500/5LbP53SgBwB7r0g2cE7bT2Qv7nB.jpg', category: 'SERIES' },
+    { title: 'BLEACH: TYBW', desc: 'Action', angle: 1.0, y: 0.1, img: 'https://image.tmdb.org/t/p/w500/p82cW7Tj5wXG6B2dJ6h3D9Qo4nZ.jpg', category: 'SERIES' },
+    { title: 'STEINS;GATE', desc: 'Sci-Fi', angle: 2.1, y: -0.7, img: 'https://image.tmdb.org/t/p/w500/jR5lH2Rj5g008d5rB1J3LhS9KqC.jpg', category: 'SERIES' },
+    { title: 'HUNTER X HUNTER', desc: 'Adventure', angle: 3.2, y: 0.9, img: 'https://image.tmdb.org/t/p/w500/g9P0m3E45m74b7o0gKCLj0Yk59D.jpg', category: 'SERIES' },
+    { title: 'GINTAMA', desc: 'Comedy', angle: 4.5, y: -0.4, img: 'https://image.tmdb.org/t/p/w500/kM9h5uP8sH3D3x826s4n7L1zGj2.jpg', category: 'SERIES' },
+    { title: 'ATTACK ON TITAN', desc: 'Dark Fantasy', angle: 5.5, y: 0.3, img: 'https://image.tmdb.org/t/p/w500/aiy3gS3U33wH81yR8x1f0F2zJjZ.jpg', category: 'SERIES' },
 ]
 
 const cardGroup = new THREE.Group()
