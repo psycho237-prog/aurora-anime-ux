@@ -567,7 +567,7 @@ setupNavigation()
 
 async function initSphereContent() {
     try {
-        const response = await fetch('https://api.jikan.moe/v4/top/anime?limit=20')
+        const response = await fetch('https://api.jikan.moe/v4/top/anime?limit=25')
         const data = await response.json()
         const animeList = data.data
 
@@ -579,7 +579,7 @@ async function initSphereContent() {
             const angleIncrement = Math.PI * 2 * goldenRatio
 
             const theta = angleIncrement * index // Horizontal angle
-            const phi = Math.acos(1 - 2 * (index + 0.5) / 20) // Vertical angle
+            const phi = Math.acos(1 - 2 * (index + 0.5) / 25) // Vertical angle
 
             // Convert spherical to cartesian for positioning
             const y = Math.cos(phi) * 2.5 // Vertical position (-2.5 to 2.5)
