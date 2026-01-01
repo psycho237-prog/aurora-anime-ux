@@ -171,45 +171,7 @@ const radius = 2.4 // Distance from center
 const height = 1.0 // Height of card
 const thetaLength = 0.6
 
-async function initSphereContent() {
-    try {
-        // Fetch Top Anime for the Sphere
-        const response = await fetch('https://api.jikan.moe/v4/top/anime?limit=6')
-        const data = await response.json()
-        const animeList = data.data
 
-        // Also update the UI Widgets with this real data
-        updateWidgets(animeList)
-
-        // Create 3D Cards
-        const cardConfig = [
-            { angle: 0, y: 0.8 },
-            { angle: 1.0, y: 0.1 },
-            { angle: 2.1, y: -0.7 },
-            { angle: 3.2, y: 0.9 },
-            { angle: 4.5, y: -0.4 },
-            { angle: 5.5, y: 0.3 }
-        ]
-
-        animeList.slice(0, 6).forEach((item, index) => {
-            const config = cardConfig[index]
-            const cardData = {
-                title: (item.title_english || item.title).substring(0, 18), // Truncate
-                desc: item.genres[0] ? item.genres[0].name : 'Anime',
-                img: item.images.jpg.large_image_url,
-                category: 'SERIES',
-                angle: config.angle,
-                y: config.y
-            }
-
-            create3DCard(cardData)
-        })
-
-    } catch (e) {
-        console.error("Failed to init sphere content", e)
-        // Fallback or leave empty
-    }
-}
 
 function create3DCard(data) {
     // Texture
@@ -273,7 +235,7 @@ function updateWidgets(items) {
 }
 
 // Start Fetch
-initSphereContent()
+
 
 
 
