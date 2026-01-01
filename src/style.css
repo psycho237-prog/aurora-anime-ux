@@ -137,22 +137,22 @@ nav .actions .login-btn:hover::before {
 /* HERO SECTION - Precise Positioning */
 .hero {
     position: absolute;
-    top: 38%;
-    /* Moved up further */
-    left: 6%;
-    /* Moved left further */
-    /* Stick to left */
+    top: 52%;
+    /* Lowered to avoid logo overlap */
+    left: 8%;
+    /* Restored consistent margin */
     transform: translateY(-50%);
-    max-width: 460px;
+    max-width: 500px;
     pointer-events: none;
-    z-index: 20;
-    /* Above widgets */
+    z-index: 5;
+    /* Lowered z-index to stay behind inner pages */
 }
 
 .hero h1 {
-    font-size: 4.5rem;
-    line-height: 1.05;
-    margin: 0 0 2rem 0;
+    font-size: 4rem;
+    /* Reduced from 4.5rem */
+    line-height: 1;
+    margin: 0 0 1.5rem 0;
     font-weight: 800;
     text-transform: uppercase;
 }
