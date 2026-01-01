@@ -509,6 +509,11 @@ function setupNavigation() {
         router('ACCOUNT')
     })
 
+    document.querySelector('.cta-btn')?.addEventListener('click', () => {
+        window.history.pushState({}, '', '/series')
+        router('SERIES')
+    })
+
     document.getElementById('signup-form')?.addEventListener('submit', (e) => {
         e.preventDefault()
         isUserLoggedIn = true
@@ -569,17 +574,25 @@ async function initSphereContent() {
         updateWidgets(animeList)
 
         animeList.forEach((item, index) => {
-            // Spiral Layout for 20 items - more vertical spread, cleaner rotations
-            const angle = (index / 20) * Math.PI * 3.0
-            const y = (index / 20) * 4.0 - 2.0
+            // Fibonacci Sphere - distribute cards evenly across entire sphere surface
+            const goldenRatio = (1 + Math.sqrt(5)) / 2
+            const angleIncrement = Math.PI * 2 * goldenRatio
+
+            const theta = angleIncrement * index // Horizontal angle
+            const phi = Math.acos(1 - 2 * (index + 0.5) / 20) // Vertical angle
+
+            // Convert spherical to cartesian for positioning
+            const y = Math.cos(phi) * 2.5 // Vertical position (-2.5 to 2.5)
+            const radiusAtY = Math.sin(phi) // Radius at this height
 
             const cardData = {
                 title: (item.title_english || item.title).substring(0, 18),
                 desc: item.genres[0]?.name || 'Anime',
                 img: item.images.jpg.large_image_url,
                 category: 'SERIES',
-                angle: angle,
-                y: y
+                angle: theta,
+                y: y,
+                phi: phi // Store for animation
             }
             create3DCard(cardData)
         })
