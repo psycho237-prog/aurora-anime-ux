@@ -404,6 +404,12 @@ function setupNavigation() {
             title: 'JOIN THE',
             subtitle: 'COMMUNITY',
             desc: 'Connect with fellow fans, discuss theories, and share your fan art in our vibrant community.'
+        },
+        'ACCOUNT': {
+            path: '/account',
+            title: 'YOUR',
+            subtitle: 'JOURNEY',
+            desc: 'Create an account to track your progress, save your favorite series, and join the discussion.'
         }
     }
 
@@ -465,19 +471,53 @@ function setupNavigation() {
         }
     }
 
-    // Event Listeners
+    // Event Listeners for Nav Links
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault()
             const pageName = link.textContent.trim()
-
-            // Push State
             if (pages[pageName]) {
                 window.history.pushState({}, '', pages[pageName].path)
                 router(pageName)
             }
         })
     })
+
+    // Custom Button Listeners
+    const loginBtn = document.querySelector('nav .actions button')
+    if (loginBtn) {
+        loginBtn.addEventListener('click', (e) => {
+            e.preventDefault()
+            window.history.pushState({}, '', pages['ACCOUNT'].path)
+            router('ACCOUNT')
+        })
+    }
+
+    const exploreBtn = document.querySelector('.cta-btn')
+    if (exploreBtn) {
+        exploreBtn.addEventListener('click', (e) => {
+            e.preventDefault()
+            // Explore -> Series
+            window.history.pushState({}, '', pages['SERIES'].path)
+            router('SERIES')
+        })
+    }
+
+    // Account Link within Account Page
+    const accountCtaLink = document.querySelector('.login-link span')
+    if (accountCtaLink) {
+        accountCtaLink.addEventListener('click', () => {
+            // For now just stay on account or switch mode
+            alert('Toggle Login/Signup mode coming soon!')
+        })
+    }
+
+    // Form submission
+    const forms = document.querySelectorAll('form')
+    forms.forEach(f => f.addEventListener('submit', (e) => {
+        e.preventDefault()
+        alert('Welcome to Aurora Anime! (Demo)')
+    }))
 
     // Handle Back Button
     window.onpopstate = () => {
