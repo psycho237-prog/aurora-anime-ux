@@ -314,79 +314,185 @@ window.addEventListener('resize', () => {
 animate()
 
 
-// --- SPA NAVIGATION LOGIC ---
+// --- CONTENT GENERATION & ROUTING ---
+
+// Mock Database of Content
+const contentDB = [
+    { title: 'F.M.A. Brotherhood', type: 'SERIES', img: '/images/fma.jpg', desc: 'Alchemy, Adventure, Philosophy' },
+    { title: 'Bleach: TYBW', type: 'SERIES', img: '/images/bleach.jpg', desc: 'Action, Supernatural, Style' },
+    { title: 'Steins;Gate', type: 'SERIES', img: '/images/steins.jpg', desc: 'Sci-Fi, Time Travel, Thriller' },
+    { title: 'Hunter x Hunter', type: 'SERIES', img: '/images/hxh.jpg', desc: 'Adventure, Battle, Strategy' },
+    { title: 'Gintama', type: 'SERIES', img: '/images/gintama.jpg', desc: 'Comedy, Samurai, Sci-Fi' },
+    { title: 'Attack on Titan', type: 'SERIES', img: '/images/aot.jpg', desc: 'Dark Fantasy, Mystery' },
+    { title: 'Solo Leveling', type: 'SERIES', img: '/images/solo.jpg', desc: 'Action, Leveling, Fantasy' },
+    { title: 'Shangri-La Frontier', type: 'SERIES', img: '/images/shangri.jpg', desc: 'Gaming, Adventure' },
+    { title: 'One Piece Red', type: 'MOVIES', img: '/images/onepiece.jpg', desc: 'Music, Adventure, Pirate' },
+    { title: 'Mashle', type: 'SERIES', img: '/images/mashle.jpg', desc: 'Magic, Muscles, Comedy' },
+    // A fake "Original"
+    { title: 'Aurora Genesis', type: 'MOWS', img: '/images/steins.jpg', desc: 'Aurora Original Series' },
+]
+
+function generateGridContent(filterType, containerId) {
+    const container = document.querySelector(`#${containerId} .media-grid`)
+    if (!container) return
+
+    // Clear previous
+    container.innerHTML = ''
+
+    const items = filterType === 'ALL'
+        ? contentDB
+        : contentDB.filter(i => i.type === filterType || (filterType === 'MOWS' && i.type === 'MOWS'))
+
+    // Duplicate for fulness if needed
+    const displayItems = [...items, ...items]
+
+    displayItems.forEach(item => {
+        const card = document.createElement('div')
+        card.className = 'media-card'
+        card.innerHTML = `
+            <img src="${item.img}" loading="lazy" alt="${item.title}">
+            <div class="media-info">
+                <h3>${item.title}</h3>
+                <p>${item.desc}</p>
+            </div>
+        `
+        container.appendChild(card)
+    })
+}
+
+
 function setupNavigation() {
     const navLinks = document.querySelectorAll('nav .menu a')
     const heroTitle = document.querySelector('.hero h1 .gradient-text')
     const heroSubtitle = document.querySelector('.hero h1 .glow-text')
     const heroDesc = document.querySelector('.hero p')
+    const homeWidgets = document.getElementById('home-widgets')
 
     const pages = {
         'HOME': {
+            path: '/',
             title: 'WHERE STORIES',
             subtitle: 'COME TO LIGHT',
-            desc: 'Dive into an immersive universe of anime. Experience your favorite series like never before with our cutting-edge holographic interface.',
-            filter: 'ALL'
+            desc: 'Dive into an immersive universe of anime. Experience your favorite series like never before with our cutting-edge holographic interface.'
         },
         'SERIES': {
+            path: '/series',
             title: 'TRENDING',
             subtitle: 'SERIES',
-            desc: 'Discover the hottest ongoing anime series. From Shonen battles to Slice of Life heartwarming moments.',
-            filter: 'SERIES'
+            desc: 'Discover the hottest ongoing anime series. From Shonen battles to Slice of Life heartwarming moments.'
         },
         'MOVIES': {
+            path: '/movies',
             title: 'BLOCKBUSTER',
             subtitle: 'MOVIES',
-            desc: 'Cinematic masterpieces await. Experience the highest quality anime films in our immersive theater mode.',
-            filter: 'MOVIES'
+            desc: 'Cinematic masterpieces await. Experience the highest quality anime films in our immersive theater mode.'
         },
         'MOWS': {
+            path: '/mows',
             title: 'MOWS',
             subtitle: 'ORIGINALS',
-            desc: 'Exclusive content only available on Aurora Anime. Original stories crafted by top creators.',
-            filter: 'ALL'
+            desc: 'Exclusive content only available on Aurora Anime. Original stories crafted by top creators.'
         },
         'NEWS': {
+            path: '/news',
             title: 'LATEST',
             subtitle: 'NEWS',
-            desc: 'Stay updated with the latest announcements, delays, and community events.',
-            filter: 'ALL'
+            desc: 'Stay updated with the latest announcements, delays, and community events.'
         },
         'COMMUNITY': {
+            path: '/community',
             title: 'JOIN THE',
             subtitle: 'COMMUNITY',
-            desc: 'Connect with fellow fans, discuss theories, and share your fan art in our vibrant community.',
-            filter: 'ALL'
+            desc: 'Connect with fellow fans, discuss theories, and share your fan art in our vibrant community.'
         }
     }
 
+    // Populate Grids initially
+    generateGridContent('SERIES', 'page-SERIES')
+    generateGridContent('MOVIES', 'page-MOVIES')
+    // MOWS / Originals can reuse Series grid for now or have special logic
+    // We'll just map it to Series layout for simplicity but filtered
+    // For this specific request, we will leave MOWS empty or add a simple logic if we had distinct MOWS data. 
+    // Let's just create a grid for MOWS too if needed but user didn't ask for MOWS grid specifically in HTML.
+    // We didn't add page-MOWS in HTML, let's inject it if missing or map to series logic.
+    // Actually, let's just stick to the HTML we made. 
+
+
+    function router(pageName) {
+        const pageData = pages[pageName]
+        if (!pageData) return
+
+        // 1. Update Hero Text (Animate)
+        gsap.to('.hero', {
+            opacity: 0,
+            duration: 0.3,
+            y: -20,
+            onComplete: () => {
+                heroTitle.textContent = pageData.title
+                heroSubtitle.textContent = pageData.subtitle
+                heroDesc.textContent = pageData.desc
+                gsap.to('.hero', { opacity: 1, y: 0, duration: 0.5 })
+            }
+        })
+
+        // 2. Handle Page Sections visibility
+        document.querySelectorAll('.page-section').forEach(el => {
+            el.classList.remove('active')
+        })
+
+        const targetSection = document.getElementById(`page-${pageName}`)
+        if (targetSection) {
+            targetSection.classList.add('active')
+        }
+
+        // 3. Handle Home Widgets
+        if (pageName === 'HOME') {
+            homeWidgets.classList.remove('hidden')
+            // Reset Globe
+            gsap.to(globeGroup.rotation, { x: 0, duration: 1 })
+            gsap.to(camera.position, { z: 6, x: 0, duration: 1.5 })
+        } else {
+            homeWidgets.classList.add('hidden')
+
+            // Move Camera / Globe for "Inner Page" feel
+            gsap.to(camera.position, { z: 7, x: -1, duration: 1.5 })
+            // Rotate globe to a side
+            gsap.to(globeGroup.rotation, {
+                y: globeGroup.rotation.y + Math.PI,
+                duration: 2,
+                ease: "power2.inOut"
+            })
+        }
+    }
+
+    // Event Listeners
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault()
             const pageName = link.textContent.trim()
-            const pageData = pages[pageName]
 
-            if (pageData) {
-                // Update Text with Fade
-                gsap.to('.hero', {
-                    opacity: 0, duration: 0.3, onComplete: () => {
-                        heroTitle.textContent = pageData.title
-                        heroSubtitle.textContent = pageData.subtitle
-                        heroDesc.textContent = pageData.desc
-                        gsap.to('.hero', { opacity: 1, duration: 0.5 })
-                    }
-                })
-
-                // Optional: Filter Cards logic
-                // For now, we simulate "new content" by randomly rotating the globe to a new position
-                gsap.to(globeGroup.rotation, {
-                    y: globeGroup.rotation.y + Math.PI / 2,
-                    duration: 1.5,
-                    ease: "power2.inOut"
-                })
+            // Push State
+            if (pages[pageName]) {
+                window.history.pushState({}, '', pages[pageName].path)
+                router(pageName)
             }
         })
     })
+
+    // Handle Back Button
+    window.onpopstate = () => {
+        const path = window.location.pathname
+        // Find page by path
+        const pageEntry = Object.entries(pages).find(([_, data]) => data.path === path)
+        const pageName = pageEntry ? pageEntry[0] : 'HOME'
+        router(pageName)
+    }
+
+    // Initial Load
+    const path = window.location.pathname
+    const pageEntry = Object.entries(pages).find(([_, data]) => data.path === path)
+    const initialPage = pageEntry ? pageEntry[0] : 'HOME'
+    router(initialPage)
 }
 
 setupNavigation()

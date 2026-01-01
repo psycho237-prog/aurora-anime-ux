@@ -58,8 +58,78 @@
     <button class="cta-btn">EXPLORE THE UNIVERSE</button>
   </div>
 
-  <!-- Bottom Glass Widgets -->
-  <div class="widgets ui-layer">
+
+  <!-- Dynamic Page Content Container -->
+  <div id="content-container" class="page-container">
+    <!-- Pages will be injected here or toggled -->
+
+    <!-- SERIES PAGE -->
+    <div id="page-SERIES" class="page-section">
+      <div class="media-grid">
+        <!-- Populated via JS -->
+      </div>
+    </div>
+
+    <!-- MOVIES PAGE -->
+    <div id="page-MOVIES" class="page-section">
+      <div class="media-grid">
+        <!-- Populated via JS -->
+      </div>
+    </div>
+
+    <!-- NEWS PAGE -->
+    <div id="page-NEWS" class="page-section">
+      <div class="news-list">
+        <div class="news-item">
+          <span class="news-date">2026-01-01</span>
+          <h2>Solo Leveling Season 2 Announced</h2>
+          <p>The dawn of the new era continues. Preparation for the island raid begins now.</p>
+        </div>
+        <div class="news-item">
+          <span class="news-date">2025-12-28</span>
+          <h2>Bleach TYBW: The Conflict Intensifies</h2>
+          <p>New key visual released for the upcoming cour. The battle between Quincies and Soul Reapers reaches its
+            peak.</p>
+        </div>
+        <div class="news-item">
+          <span class="news-date">2025-12-15</span>
+          <h2>Aurora Platform Update v2.0</h2>
+          <p>We've improved the holographic engine stability and added support for 8K neural rendering.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMMUNITY PAGE -->
+    <div id="page-COMMUNITY" class="page-section">
+      <div class="community-grid">
+        <div class="comm-sidebar">
+          <h3>CHANNELS</h3>
+          <p># general</p>
+          <p># theories</p>
+          <p># fan-art</p>
+          <p style="color:var(--color-cyan)"># announcements</p>
+        </div>
+        <div class="comm-feed">
+          <div class="comm-post">
+            <span class="user-tag">@HunterFan99</span>
+            <p>Has anyone found the easter egg in the HxH card yet?</p>
+          </div>
+          <div class="comm-post">
+            <span class="user-tag">@SoulReaper</span>
+            <p>The new UI is insane! Matches the vibe of the Soul Society perfectly.</p>
+          </div>
+          <div class="comm-post">
+            <span class="user-tag">@TitanShifter</span>
+            <p>Waiting for the new movie drop on Friday...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Glass Widgets (Home Only) -->
+  <div class="widgets ui-layer" id="home-widgets">
     <!-- New Release Widget -->
     <div class="glass-card widget-release">
       <div class="card-header">
