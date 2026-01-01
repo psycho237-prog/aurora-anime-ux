@@ -317,36 +317,57 @@ animate()
 // --- CONTENT GENERATION & ROUTING ---
 
 // Mock Database of Content
-const contentDB = [
-    { title: 'F.M.A. Brotherhood', type: 'SERIES', img: '/images/fma.jpg', desc: 'Alchemy, Adventure, Philosophy' },
-    { title: 'Bleach: TYBW', type: 'SERIES', img: '/images/bleach.jpg', desc: 'Action, Supernatural, Style' },
-    { title: 'Steins;Gate', type: 'SERIES', img: '/images/steins.jpg', desc: 'Sci-Fi, Time Travel, Thriller' },
-    { title: 'Hunter x Hunter', type: 'SERIES', img: '/images/hxh.jpg', desc: 'Adventure, Battle, Strategy' },
-    { title: 'Gintama', type: 'SERIES', img: '/images/gintama.jpg', desc: 'Comedy, Samurai, Sci-Fi' },
-    { title: 'Attack on Titan', type: 'SERIES', img: '/images/aot.jpg', desc: 'Dark Fantasy, Mystery' },
-    { title: 'Solo Leveling', type: 'SERIES', img: '/images/solo.jpg', desc: 'Action, Leveling, Fantasy' },
-    { title: 'Shangri-La Frontier', type: 'SERIES', img: '/images/shangri.jpg', desc: 'Gaming, Adventure' },
-    { title: 'One Piece Red', type: 'MOVIES', img: '/images/onepiece.jpg', desc: 'Music, Adventure, Pirate' },
-    { title: 'Mashle', type: 'SERIES', img: '/images/mashle.jpg', desc: 'Magic, Muscles, Comedy' },
-    // A fake "Original"
-    { title: 'Aurora Genesis', type: 'MOWS', img: '/images/steins.jpg', desc: 'Aurora Original Series' },
-]
+// Data Cache
+let animeCache = {
+    'SERIES': [],
+    'MOVIES': []
+}
 
-function generateGridContent(filterType, containerId) {
+async function fetchAnimeData(type) {
+    if (animeCache[type].length > 0) return animeCache[type]
+
+    try {
+        // Jikan API: Top Anime
+        const endpoint = type === 'MOVIES'
+            ? 'https://api.jikan.moe/v4/top/anime?type=movie&limit=20'
+            : 'https://api.jikan.moe/v4/top/anime?type=tv&limit=20'
+
+        const response = await fetch(endpoint)
+        const data = await response.json()
+
+        animeCache[type] = data.data.map(item => ({
+            title: item.title_english || item.title,
+            img: item.images.jpg.large_image_url,
+            desc: item.genres.slice(0, 3).map(g => g.name).join(', '),
+            type: type
+        }))
+        return animeCache[type]
+    } catch (e) {
+        console.error("Failed to fetch anime", e)
+        return []
+    }
+}
+
+async function generateGridContent(filterType, containerId) {
     const container = document.querySelector(`#${containerId} .media-grid`)
     if (!container) return
 
-    // Clear previous
+    // Show Loading
+    container.innerHTML = '<div style="color:white; padding:2rem; font-family:var(--font-primary);">CONNECTING TO NEURAL NETWORK...</div>'
+
+    let items = []
+    if (filterType === 'SERIES' || filterType === 'MOVIES') {
+        items = await fetchAnimeData(filterType)
+    } else {
+        // Fallback for MOWS / Others
+        items = [
+            { title: 'Aurora Genesis', img: '/images/steins.jpg', desc: 'Aurora Original Series' }
+        ]
+    }
+
     container.innerHTML = ''
 
-    const items = filterType === 'ALL'
-        ? contentDB
-        : contentDB.filter(i => i.type === filterType || (filterType === 'MOWS' && i.type === 'MOWS'))
-
-    // Duplicate for fulness if needed
-    const displayItems = [...items, ...items]
-
-    displayItems.forEach(item => {
+    items.forEach(item => {
         const card = document.createElement('div')
         card.className = 'media-card'
         card.innerHTML = `
@@ -367,6 +388,21 @@ function setupNavigation() {
     const heroSubtitle = document.querySelector('.hero h1 .glow-text')
     const heroDesc = document.querySelector('.hero p')
     const homeWidgets = document.getElementById('home-widgets')
+
+    // Handle Mobile Globe Sizing
+    function adjustSceneForMobile() {
+        if (window.innerWidth < 768) {
+            globeGroup.scale.set(0.6, 0.6, 0.6)
+            globeGroup.position.x = 0 // Center it on mobile
+            camera.position.z = 8 // Move back a bit
+        } else {
+            globeGroup.scale.set(1, 1, 1)
+            globeGroup.position.x = 1.2
+            camera.position.z = 6
+        }
+    }
+    window.addEventListener('resize', adjustSceneForMobile)
+    adjustSceneForMobile() // Initial call
 
     const pages = {
         'HOME': {
