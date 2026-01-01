@@ -165,12 +165,12 @@ globeGroup.add(grid)
 
 // --- CURVED CARDS ---
 const cardsData = [
-    { title: 'F.M.A. BROTHERHOOD', desc: 'Adventure', angle: 0, y: 0.8, img: 'https://image.tmdb.org/t/p/w500/5LbP53SgBwB7r0g2cE7bT2Qv7nB.jpg', category: 'SERIES' },
-    { title: 'BLEACH: TYBW', desc: 'Action', angle: 1.0, y: 0.1, img: 'https://image.tmdb.org/t/p/w500/p82cW7Tj5wXG6B2dJ6h3D9Qo4nZ.jpg', category: 'SERIES' },
-    { title: 'STEINS;GATE', desc: 'Sci-Fi', angle: 2.1, y: -0.7, img: 'https://image.tmdb.org/t/p/w500/jR5lH2Rj5g008d5rB1J3LhS9KqC.jpg', category: 'SERIES' },
-    { title: 'HUNTER X HUNTER', desc: 'Adventure', angle: 3.2, y: 0.9, img: 'https://image.tmdb.org/t/p/w500/g9P0m3E45m74b7o0gKCLj0Yk59D.jpg', category: 'SERIES' },
-    { title: 'GINTAMA', desc: 'Comedy', angle: 4.5, y: -0.4, img: 'https://image.tmdb.org/t/p/w500/kM9h5uP8sH3D3x826s4n7L1zGj2.jpg', category: 'SERIES' },
-    { title: 'ATTACK ON TITAN', desc: 'Dark Fantasy', angle: 5.5, y: 0.3, img: 'https://image.tmdb.org/t/p/w500/aiy3gS3U33wH81yR8x1f0F2zJjZ.jpg', category: 'SERIES' },
+    { title: 'F.M.A. BROTHERHOOD', desc: 'Adventure', angle: 0, y: 0.8, img: '/images/fma.jpg', category: 'SERIES' },
+    { title: 'BLEACH: TYBW', desc: 'Action', angle: 1.0, y: 0.1, img: '/images/bleach.jpg', category: 'SERIES' },
+    { title: 'STEINS;GATE', desc: 'Sci-Fi', angle: 2.1, y: -0.7, img: '/images/steins.jpg', category: 'SERIES' },
+    { title: 'HUNTER X HUNTER', desc: 'Adventure', angle: 3.2, y: 0.9, img: '/images/hxh.jpg', category: 'SERIES' },
+    { title: 'GINTAMA', desc: 'Comedy', angle: 4.5, y: -0.4, img: '/images/gintama.jpg', category: 'SERIES' },
+    { title: 'ATTACK ON TITAN', desc: 'Dark Fantasy', angle: 5.5, y: 0.3, img: '/images/aot.jpg', category: 'SERIES' },
 ]
 
 const cardGroup = new THREE.Group()
