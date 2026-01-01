@@ -196,8 +196,8 @@ nav .actions button:hover {
 }
 
 .glass-card {
-    background: rgba(10, 10, 30, 0.4);
-    backdrop-filter: blur(12px);
+    background: rgba(10, 10, 30, 0.75);
+    backdrop-filter: blur(16px);
     border: 1px solid rgba(0, 243, 255, 0.2);
     border-radius: 16px;
     padding: 1.5rem;
@@ -368,26 +368,30 @@ nav .actions button:hover {
 /* MOBILE RESPONSIVE */
 @media (max-width: 768px) {
     .widgets {
-        flex-direction: column;
-        align-items: center;
-        bottom: 1rem;
-        left: 1rem;
-        right: 1rem;
-        gap: 1rem;
         display: none;
-        /* Hide complex widgets on mobile to save space/perf? Or stack them? */
-        /* Reference implies desktop view. Let's hide text widgets and keep player or just stack. */
-        /* Let's keep it clean for mobile. */
     }
 
     .hero {
+        position: relative;
         left: 5%;
-        top: 40%;
+        top: 100px;
+        /* Push down significantly */
         width: 90%;
+        transform: none;
+        text-align: center;
+        z-index: 5;
+        margin-bottom: 350px;
+        /* Space for Sphere */
     }
 
     .hero h1 {
-        font-size: 3rem;
+        font-size: 2.8rem;
+    }
+
+    .hero p {
+        background: none;
+        border: none;
+        padding-left: 0;
     }
 
     nav {

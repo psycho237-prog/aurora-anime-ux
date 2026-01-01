@@ -164,15 +164,6 @@ globeGroup.add(grid)
 
 
 // --- CURVED CARDS ---
-const cardsData = [
-    { title: 'F.M.A. BROTHERHOOD', desc: 'Adventure', angle: 0, y: 0.8, img: '/images/fma.jpg', category: 'SERIES' },
-    { title: 'BLEACH: TYBW', desc: 'Action', angle: 1.0, y: 0.1, img: '/images/bleach.jpg', category: 'SERIES' },
-    { title: 'STEINS;GATE', desc: 'Sci-Fi', angle: 2.1, y: -0.7, img: '/images/steins.jpg', category: 'SERIES' },
-    { title: 'HUNTER X HUNTER', desc: 'Adventure', angle: 3.2, y: 0.9, img: '/images/hxh.jpg', category: 'SERIES' },
-    { title: 'GINTAMA', desc: 'Comedy', angle: 4.5, y: -0.4, img: '/images/gintama.jpg', category: 'SERIES' },
-    { title: 'ATTACK ON TITAN', desc: 'Dark Fantasy', angle: 5.5, y: 0.3, img: '/images/aot.jpg', category: 'SERIES' },
-]
-
 const cardGroup = new THREE.Group()
 globeGroup.add(cardGroup)
 
@@ -180,11 +171,50 @@ const radius = 2.4 // Distance from center
 const height = 1.0 // Height of card
 const thetaLength = 0.6
 
-cardsData.forEach(data => {
+async function initSphereContent() {
+    try {
+        // Fetch Top Anime for the Sphere
+        const response = await fetch('https://api.jikan.moe/v4/top/anime?limit=6')
+        const data = await response.json()
+        const animeList = data.data
+
+        // Also update the UI Widgets with this real data
+        updateWidgets(animeList)
+
+        // Create 3D Cards
+        const cardConfig = [
+            { angle: 0, y: 0.8 },
+            { angle: 1.0, y: 0.1 },
+            { angle: 2.1, y: -0.7 },
+            { angle: 3.2, y: 0.9 },
+            { angle: 4.5, y: -0.4 },
+            { angle: 5.5, y: 0.3 }
+        ]
+
+        animeList.slice(0, 6).forEach((item, index) => {
+            const config = cardConfig[index]
+            const cardData = {
+                title: (item.title_english || item.title).substring(0, 18), // Truncate
+                desc: item.genres[0] ? item.genres[0].name : 'Anime',
+                img: item.images.jpg.large_image_url,
+                category: 'SERIES',
+                angle: config.angle,
+                y: config.y
+            }
+
+            create3DCard(cardData)
+        })
+
+    } catch (e) {
+        console.error("Failed to init sphere content", e)
+        // Fallback or leave empty
+    }
+}
+
+function create3DCard(data) {
     // Texture
     const canvas = createCardTexture(data)
     const textField = new THREE.CanvasTexture(canvas)
-    // Anisotropy helps with oblique viewing angles
     textField.anisotropy = renderer.capabilities.getMaxAnisotropy()
     data.texture = textField
 
@@ -201,7 +231,6 @@ cardsData.forEach(data => {
     const mesh = new THREE.Mesh(geo, mat)
 
     // Position/Rotate
-    // Cylinder is created at specific angle. We rotate the MESH freely.
     mesh.rotation.y = data.angle
     mesh.position.y = data.y
 
@@ -211,7 +240,40 @@ cardsData.forEach(data => {
 
     mesh.userData = { originalY: data.y, angle: data.angle, category: data.category }
     cardGroup.add(mesh)
-})
+}
+
+function updateWidgets(items) {
+    // 1. Trending Widget
+    const trendingContainer = document.querySelector('.trending-list')
+    if (trendingContainer && items.length > 2) {
+        trendingContainer.innerHTML = ''
+        items.slice(0, 2).forEach(item => {
+            trendingContainer.innerHTML += `
+            <div class="trend-item">
+            <img src="${item.images.jpg.small_image_url}" />
+            <div class="info">
+                <h4>${(item.title_english || item.title).substring(0, 15)}...</h4>
+                <p>${item.genres[0]?.name || 'Anime'}</p>
+            </div>
+            </div>`
+        })
+    }
+
+    // 2. New Episodes (Just use other items for demo)
+    const releaseGrid = document.querySelector('.release-grid')
+    if (releaseGrid && items.length > 5) {
+        // Keep the overlay div
+        const overlay = releaseGrid.querySelector('.play-overlay').outerHTML
+        releaseGrid.innerHTML = ''
+        items.slice(2, 5).forEach(item => {
+            releaseGrid.innerHTML += `<img src="${item.images.jpg.image_url}" alt="${item.title}" />`
+        })
+        releaseGrid.innerHTML += overlay
+    }
+}
+
+// Start Fetch
+initSphereContent()
 
 
 
