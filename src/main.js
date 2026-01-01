@@ -508,6 +508,27 @@ function setupNavigation() {
     }
 
     // Event Listeners for Nav Links
+
+    // Mobile Menu Toggle
+    const mobileBtn = document.querySelector('.mobile-menu-btn')
+    const mobileMenu = document.querySelector('nav .menu')
+
+    if (mobileBtn && mobileMenu) {
+        mobileBtn.addEventListener('click', () => {
+            mobileBtn.classList.toggle('active')
+            mobileMenu.classList.toggle('active')
+        })
+
+        // Close menu when a link is clicked
+        const mobileLinks = mobileMenu.querySelectorAll('a')
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileBtn.classList.remove('active')
+                mobileMenu.classList.remove('active')
+            })
+        })
+    }
+
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault()
