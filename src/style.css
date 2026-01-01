@@ -137,12 +137,16 @@ nav .actions .login-btn:hover::before {
 /* HERO SECTION - Precise Positioning */
 .hero {
     position: absolute;
-    top: 48%;
-    left: 8%;
+    top: 38%;
+    /* Moved up further */
+    left: 6%;
+    /* Moved left further */
     /* Stick to left */
     transform: translateY(-50%);
-    max-width: 500px;
+    max-width: 460px;
     pointer-events: none;
+    z-index: 20;
+    /* Above widgets */
 }
 
 .hero h1 {
@@ -203,28 +207,26 @@ nav .actions .login-btn:hover::before {
 /* WIDGETS (Bottom Layer) */
 .widgets {
     position: absolute;
-    bottom: 2rem;
+    bottom: 2.5rem;
+    /* Moved down slightly */
     left: 4rem;
     right: 4rem;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
     pointer-events: none;
-    /* Container passes clicks */
     perspective: 1000px;
-    /* 3D Perspective for tilted panels */
 }
 
 .glass-card {
-    background: rgba(10, 10, 30, 0.75);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(0, 243, 255, 0.2);
-    border-radius: 16px;
-    padding: 1.5rem;
+    background: rgba(10, 10, 30, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 243, 255, 0.15);
+    border-radius: 12px;
+    padding: 1.2rem;
     pointer-events: auto;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    transition: all 0.3s;
-    /* The Signature Tilted Look */
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     transform-style: preserve-3d;
     transform: rotateX(10deg) scale(0.95);
 }
@@ -232,129 +234,52 @@ nav .actions .login-btn:hover::before {
 .glass-card:hover {
     border-color: var(--color-cyan);
     transform: rotateX(0deg) scale(1.0);
-    background: rgba(10, 10, 30, 0.6);
+    background: rgba(15, 15, 40, 0.8);
+    box-shadow: 0 15px 40px rgba(0, 243, 255, 0.15);
 }
 
 .card-header span {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: var(--color-cyan);
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.2em;
     display: block;
     margin-bottom: 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 0.5rem;
+    opacity: 0.8;
 }
 
 /* 1. New Release (Left) */
 .widget-release {
-    width: 300px;
+    width: 260px;
     transform-origin: bottom left;
 }
 
 .release-grid {
     display: flex;
-    gap: 10px;
+    gap: 12px;
     position: relative;
 }
 
 .release-grid img {
-    width: 80px;
-    height: 50px;
+    width: 70px;
+    height: 100px;
     object-fit: cover;
-    border-radius: 4px;
-    opacity: 0.7;
+    border-radius: 6px;
+    opacity: 0.5;
     transition: 0.3s;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .release-grid img:hover {
     opacity: 1;
-    transform: scale(1.1);
+    border-color: var(--color-cyan);
+    transform: translateY(-5px);
 }
-
-/* 2. Player (Center) */
-.widget-player {
-    width: 340px;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    background: rgba(0, 0, 0, 0.6);
-    border-top: 2px solid var(--color-cyan);
-}
-
-.player-visual {
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-}
-
-.wave {
-    width: 4px;
-    height: 100%;
-    background: var(--color-cyan);
-    animation: wave 1s infinite;
-}
-
-.wave:nth-child(2) {
-    animation-delay: 0.1s;
-    height: 60%;
-}
-
-.wave:nth-child(3) {
-    animation-delay: 0.2s;
-    height: 80%;
-}
-
-@keyframes wave {
-
-    0%,
-    100% {
-        transform: scaleY(0.5);
-        opacity: 0.5;
-    }
-
-    50% {
-        transform: scaleY(1);
-        opacity: 1;
-    }
-}
-
-.player-controls .progress-bar {
-    height: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
-    margin-bottom: 1rem;
-    overflow: hidden;
-}
-
-.player-controls .fill {
-    width: 60%;
-    height: 100%;
-    background: var(--color-cyan);
-    box-shadow: 0 0 10px var(--color-cyan);
-}
-
-.player-controls .buttons {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
-}
-
-.play {
-    color: var(--color-cyan);
-    text-shadow: 0 0 10px var(--color-cyan);
-}
-
 
 /* 3. Trending (Right) */
 .widget-trending {
-    width: 280px;
+    width: 260px;
     transform-origin: bottom right;
 }
 
@@ -363,26 +288,48 @@ nav .actions .login-btn:hover::before {
     gap: 1rem;
     margin-bottom: 0.8rem;
     align-items: center;
+    transition: 0.3s;
+}
+
+.trend-item:hover {
+    transform: translateX(-5px);
 }
 
 .trend-item img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
     object-fit: cover;
-    border: 1px solid var(--color-cyan);
+    border: 1px solid rgba(0, 243, 255, 0.3);
 }
 
 .trend-item h4 {
     margin: 0;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 700;
+    color: #fff;
 }
 
 .trend-item p {
     margin: 0;
     font-size: 0.6rem;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Scanline Overlay for Visual Aspect */
+body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.01), rgba(0, 255, 0, 0.005), rgba(0, 0, 255, 0.01));
+    background-size: 100% 4px, 3px 100%;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0.3;
 }
 
 /* MOBILE RESPONSIVE */

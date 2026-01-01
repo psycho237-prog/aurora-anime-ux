@@ -376,11 +376,19 @@ async function populateNetflixRow(containerId, dataPromise) {
     items.forEach(item => {
         const div = document.createElement('div')
         div.className = 'media-card'
+
+        const watchLink = `https://www.google.com/search?q=watch+${encodeURIComponent(item.title)}+anime`
+        const downloadLink = `https://www.google.com/search?q=download+${encodeURIComponent(item.title)}+anime`
+
         div.innerHTML = `
             <img src="${item.img}" loading="lazy">
             <div class="media-info">
                 <h3>${item.title}</h3>
                 <p>${item.desc}</p>
+                <div class="media-actions">
+                    <a href="${watchLink}" target="_blank" class="action-btn btn-watch">WATCH</a>
+                    <a href="${downloadLink}" target="_blank" class="action-btn btn-download">GET</a>
+                </div>
             </div>
         `
         container.appendChild(div)
@@ -405,8 +413,8 @@ function setupNavigation() {
             globeGroup.position.x = 0
             camera.position.z = 8
         } else {
-            globeGroup.scale.set(1, 1, 1)
-            globeGroup.position.x = 1.2
+            globeGroup.scale.set(1.1, 1.1, 1.1)
+            globeGroup.position.x = 2.2 // Push further right to avoid overlay with hero text
             camera.position.z = 6
         }
     }
@@ -561,9 +569,9 @@ async function initSphereContent() {
         updateWidgets(animeList)
 
         animeList.forEach((item, index) => {
-            // Spiral Layout for 20 items
-            const angle = (index / 20) * Math.PI * 4 // Two full rotations
-            const y = (index / 20) * 3 - 1.5 // Spread top to bottom
+            // Spiral Layout for 20 items - more vertical spread, cleaner rotations
+            const angle = (index / 20) * Math.PI * 3.0
+            const y = (index / 20) * 4.0 - 2.0
 
             const cardData = {
                 title: (item.title_english || item.title).substring(0, 18),
