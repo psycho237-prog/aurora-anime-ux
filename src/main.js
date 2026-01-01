@@ -366,6 +366,8 @@ function animate() {
     renderer.render(scene, camera)
 }
 
+animate()
+
 // Global resize
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight
@@ -373,73 +375,53 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight)
 })
 
-animate()
-
-
 // --- CONTENT GENERATION & ROUTING ---
 
-// Mock Database of Content
-// Data Cache
-let animeCache = {
-    'SERIES': [],
-    'MOVIES': []
-}
+let animeCache = {}
+let isUserLoggedIn = false
 
-async function fetchAnimeData(type) {
-    if (animeCache[type].length > 0) return animeCache[type]
+async function fetchAnimeData(category, type = 'tv') {
+    const cacheKey = `${category}-${type}`
+    if (animeCache[cacheKey]) return animeCache[cacheKey]
 
     try {
-        // Jikan API: Top Anime
-        const endpoint = type === 'MOVIES'
-            ? 'https://api.jikan.moe/v4/top/anime?type=movie&limit=20'
-            : 'https://api.jikan.moe/v4/top/anime?type=tv&limit=20'
+        let url = `https://api.jikan.moe/v4/top/anime?limit=15&type=${type}`
+        if (category === 'action') url = `https://api.jikan.moe/v4/anime?genres=1&limit=15&order_by=score&sort=desc`
 
-        const response = await fetch(endpoint)
+        const response = await fetch(url)
         const data = await response.json()
 
-        animeCache[type] = data.data.map(item => ({
+        const result = data.data.map(item => ({
             title: item.title_english || item.title,
             img: item.images.jpg.large_image_url,
-            desc: item.genres.slice(0, 3).map(g => g.name).join(', '),
-            type: type
+            desc: item.genres.slice(0, 2).map(g => g.name).join(', '),
         }))
-        return animeCache[type]
+        animeCache[cacheKey] = result
+        return result
     } catch (e) {
-        console.error("Failed to fetch anime", e)
         return []
     }
 }
 
-async function generateGridContent(filterType, containerId) {
-    const container = document.querySelector(`#${containerId} .media-grid`)
+async function populateNetflixRow(containerId, dataPromise) {
+    const container = document.getElementById(containerId)
     if (!container) return
 
-    // Show Loading
-    container.innerHTML = '<div style="color:white; padding:2rem; font-family:var(--font-primary);">CONNECTING TO NEURAL NETWORK...</div>'
-
-    let items = []
-    if (filterType === 'SERIES' || filterType === 'MOVIES') {
-        items = await fetchAnimeData(filterType)
-    } else {
-        // Fallback for MOWS / Others
-        items = [
-            { title: 'Aurora Genesis', img: '/images/steins.jpg', desc: 'Aurora Original Series' }
-        ]
-    }
-
+    container.innerHTML = '<div style="color:white; padding:1rem; opacity:0.5;">SIGNALING NEURAL NETWORK...</div>'
+    const items = await dataPromise
     container.innerHTML = ''
 
     items.forEach(item => {
-        const card = document.createElement('div')
-        card.className = 'media-card'
-        card.innerHTML = `
-            <img src="${item.img}" loading="lazy" alt="${item.title}">
+        const div = document.createElement('div')
+        div.className = 'media-card'
+        div.innerHTML = `
+            <img src="${item.img}" loading="lazy">
             <div class="media-info">
                 <h3>${item.title}</h3>
                 <p>${item.desc}</p>
             </div>
         `
-        container.appendChild(card)
+        container.appendChild(div)
     })
 }
 
@@ -450,13 +432,16 @@ function setupNavigation() {
     const heroSubtitle = document.querySelector('.hero h1 .glow-text')
     const heroDesc = document.querySelector('.hero p')
     const homeWidgets = document.getElementById('home-widgets')
+    const exitBtn = document.getElementById('global-exit')
 
-    // Handle Mobile Globe Sizing
+    // Export router globally for inline HTML calls
+    window.router = router
+
     function adjustSceneForMobile() {
         if (window.innerWidth < 768) {
             globeGroup.scale.set(0.6, 0.6, 0.6)
-            globeGroup.position.x = 0 // Center it on mobile
-            camera.position.z = 8 // Move back a bit
+            globeGroup.position.x = 0
+            camera.position.z = 8
         } else {
             globeGroup.scale.set(1, 1, 1)
             globeGroup.position.x = 1.2
@@ -464,73 +449,24 @@ function setupNavigation() {
         }
     }
     window.addEventListener('resize', adjustSceneForMobile)
-    adjustSceneForMobile() // Initial call
+    adjustSceneForMobile()
 
     const pages = {
-        'HOME': {
-            path: '/',
-            title: 'WHERE STORIES',
-            subtitle: 'COME TO LIGHT',
-            desc: 'Dive into an immersive universe of anime. Experience your favorite series like never before with our cutting-edge holographic interface.'
-        },
-        'SERIES': {
-            path: '/series',
-            title: 'TRENDING',
-            subtitle: 'SERIES',
-            desc: 'Discover the hottest ongoing anime series. From Shonen battles to Slice of Life heartwarming moments.'
-        },
-        'MOVIES': {
-            path: '/movies',
-            title: 'BLOCKBUSTER',
-            subtitle: 'MOVIES',
-            desc: 'Cinematic masterpieces await. Experience the highest quality anime films in our immersive theater mode.'
-        },
-        'MOWS': {
-            path: '/mows',
-            title: 'MOWS',
-            subtitle: 'ORIGINALS',
-            desc: 'Exclusive content only available on Aurora Anime. Original stories crafted by top creators.'
-        },
-        'NEWS': {
-            path: '/news',
-            title: 'LATEST',
-            subtitle: 'NEWS',
-            desc: 'Stay updated with the latest announcements, delays, and community events.'
-        },
-        'COMMUNITY': {
-            path: '/community',
-            title: 'JOIN THE',
-            subtitle: 'COMMUNITY',
-            desc: 'Connect with fellow fans, discuss theories, and share your fan art in our vibrant community.'
-        },
-        'ACCOUNT': {
-            path: '/account',
-            title: 'YOUR',
-            subtitle: 'JOURNEY',
-            desc: 'Create an account to track your progress, save your favorite series, and join the discussion.'
-        }
+        'HOME': { path: '/', title: 'WHERE STORIES', subtitle: 'COME TO LIGHT', desc: 'Dive into an immersive universe of anime. Experience your favorite series like never before with our cutting-edge holographic interface.' },
+        'SERIES': { path: '/series', title: 'CONTINUE', subtitle: 'WATCHING', desc: 'The most anticipated series are here. Resume your journey into the unknown.' },
+        'MOVIES': { path: '/movies', title: 'CINEMATIC', subtitle: 'MASTERPIECES', desc: 'High-quality films and special features. Experience stories at scale.' },
+        'ACCOUNT': { path: '/account', title: 'USER', subtitle: 'PROFILE', desc: 'Access your favorites, history, and community settings.' },
+        'COMMUNITY': { path: '/community', title: 'NEURAL', subtitle: 'NETWORK', desc: 'Connect with other fans in the Aurora universe. Instant communication enabled.' }
     }
-
-    // Populate Grids initially
-    generateGridContent('SERIES', 'page-SERIES')
-    generateGridContent('MOVIES', 'page-MOVIES')
-    // MOWS / Originals can reuse Series grid for now or have special logic
-    // We'll just map it to Series layout for simplicity but filtered
-    // For this specific request, we will leave MOWS empty or add a simple logic if we had distinct MOWS data. 
-    // Let's just create a grid for MOWS too if needed but user didn't ask for MOWS grid specifically in HTML.
-    // We didn't add page-MOWS in HTML, let's inject it if missing or map to series logic.
-    // Actually, let's just stick to the HTML we made. 
-
 
     function router(pageName) {
         const pageData = pages[pageName]
         if (!pageData) return
 
-        // 1. Update Hero Text (Animate)
+        exitBtn.style.display = (pageName === 'HOME') ? 'none' : 'flex'
+
         gsap.to('.hero', {
-            opacity: 0,
-            duration: 0.3,
-            y: -20,
+            opacity: 0, duration: 0.3, y: -20,
             onComplete: () => {
                 heroTitle.textContent = pageData.title
                 heroSubtitle.textContent = pageData.subtitle
@@ -539,51 +475,47 @@ function setupNavigation() {
             }
         })
 
-        // 2. Handle Page Sections visibility
-        document.querySelectorAll('.page-section').forEach(el => {
-            el.classList.remove('active')
-        })
-
+        document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'))
         const targetSection = document.getElementById(`page-${pageName}`)
-        if (targetSection) {
-            targetSection.classList.add('active')
-        }
+        if (targetSection) targetSection.classList.add('active')
 
-        // 3. Handle Home Widgets
         if (pageName === 'HOME') {
             homeWidgets.classList.remove('hidden')
-            // Reset Globe
             gsap.to(globeGroup.rotation, { x: 0, duration: 1 })
             gsap.to(camera.position, { z: 6, x: 0, duration: 1.5 })
         } else {
             homeWidgets.classList.add('hidden')
-
-            // Move Camera / Globe for "Inner Page" feel
             gsap.to(camera.position, { z: 7, x: -1, duration: 1.5 })
-            // Rotate globe to a side
-            gsap.to(globeGroup.rotation, {
-                y: globeGroup.rotation.y + Math.PI,
-                duration: 2,
-                ease: "power2.inOut"
-            })
+            gsap.to(globeGroup.rotation, { y: globeGroup.rotation.y + Math.PI, duration: 2, ease: "power2.inOut" })
+        }
+
+        // Logic for specific pages
+        if (pageName === 'SERIES') {
+            populateNetflixRow('series-trending', fetchAnimeData('trending', 'tv'))
+            populateNetflixRow('series-action', fetchAnimeData('action'))
+        }
+        if (pageName === 'MOVIES') {
+            populateNetflixRow('movies-top', fetchAnimeData('top', 'movie'))
+            populateNetflixRow('movies-classics', fetchAnimeData('trending', 'movie'))
+        }
+        if (pageName === 'COMMUNITY') {
+            updateCommunityState()
         }
     }
 
-    // Event Listeners for Nav Links
+    exitBtn.addEventListener('click', () => {
+        window.history.pushState({}, '', '/')
+        router('HOME')
+    })
 
-    // Mobile Menu Toggle
     const mobileBtn = document.querySelector('.mobile-menu-btn')
     const mobileMenu = document.querySelector('nav .menu')
-
     if (mobileBtn && mobileMenu) {
         mobileBtn.addEventListener('click', () => {
             mobileBtn.classList.toggle('active')
             mobileMenu.classList.toggle('active')
         })
-
-        // Close menu when a link is clicked
-        const mobileLinks = mobileMenu.querySelectorAll('a')
-        mobileLinks.forEach(link => {
+        mobileMenu.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 mobileBtn.classList.remove('active')
                 mobileMenu.classList.remove('active')
@@ -602,56 +534,88 @@ function setupNavigation() {
         })
     })
 
-    // Custom Button Listeners
-    const loginBtn = document.querySelector('nav .actions button')
-    if (loginBtn) {
-        loginBtn.addEventListener('click', (e) => {
-            e.preventDefault()
-            window.history.pushState({}, '', pages['ACCOUNT'].path)
-            router('ACCOUNT')
-        })
-    }
+    document.querySelector('.login-btn')?.addEventListener('click', () => {
+        window.history.pushState({}, '', '/account')
+        router('ACCOUNT')
+    })
 
-    const exploreBtn = document.querySelector('.cta-btn')
-    if (exploreBtn) {
-        exploreBtn.addEventListener('click', (e) => {
-            e.preventDefault()
-            // Explore -> Series
-            window.history.pushState({}, '', pages['SERIES'].path)
-            router('SERIES')
-        })
-    }
-
-    // Account Link within Account Page
-    const accountCtaLink = document.querySelector('.login-link span')
-    if (accountCtaLink) {
-        accountCtaLink.addEventListener('click', () => {
-            // For now just stay on account or switch mode
-            alert('Toggle Login/Signup mode coming soon!')
-        })
-    }
-
-    // Form submission
-    const forms = document.querySelectorAll('form')
-    forms.forEach(f => f.addEventListener('submit', (e) => {
+    document.getElementById('signup-form')?.addEventListener('submit', (e) => {
         e.preventDefault()
-        alert('Welcome to Aurora Anime! (Demo)')
-    }))
+        isUserLoggedIn = true
+        alert("Welcome to the Aurora Network. Authentication successful.")
+        window.history.pushState({}, '', '/')
+        router('HOME')
+    })
 
-    // Handle Back Button
+    function updateCommunityState() {
+        const lock = document.getElementById('chat-lock')
+        const input = document.getElementById('chat-input')
+        if (isUserLoggedIn) {
+            lock.style.display = 'none'
+            input.disabled = false
+            input.placeholder = "Broadcast a message..."
+        } else {
+            lock.style.display = 'flex'
+            input.disabled = true
+            input.placeholder = "Login to participate"
+        }
+    }
+
+    const sendBtn = document.getElementById('chat-send')
+    const chatInput = document.getElementById('chat-input')
+    const chatMsgs = document.getElementById('chat-messages')
+
+    sendBtn?.addEventListener('click', () => {
+        if (!chatInput.value.trim()) return
+        const msg = document.createElement('div')
+        msg.className = 'comm-post'
+        msg.innerHTML = `<span class="user-tag">@OPERATOR</span><p>${chatInput.value}</p>`
+        chatMsgs.appendChild(msg)
+        chatMsgs.scrollTop = chatMsgs.scrollHeight
+        chatInput.value = ''
+    })
+
     window.onpopstate = () => {
         const path = window.location.pathname
-        // Find page by path
         const pageEntry = Object.entries(pages).find(([_, data]) => data.path === path)
-        const pageName = pageEntry ? pageEntry[0] : 'HOME'
-        router(pageName)
+        router(pageEntry ? pageEntry[0] : 'HOME')
     }
 
-    // Initial Load
     const path = window.location.pathname
     const pageEntry = Object.entries(pages).find(([_, data]) => data.path === path)
-    const initialPage = pageEntry ? pageEntry[0] : 'HOME'
-    router(initialPage)
+    router(pageEntry ? pageEntry[0] : 'HOME')
 }
 
 setupNavigation()
+
+// --- CURVED CARDS ENHANCED ---
+
+async function initSphereContent() {
+    try {
+        const response = await fetch('https://api.jikan.moe/v4/top/anime?limit=20')
+        const data = await response.json()
+        const animeList = data.data
+
+        updateWidgets(animeList)
+
+        animeList.forEach((item, index) => {
+            // Spiral Layout for 20 items
+            const angle = (index / 20) * Math.PI * 4 // Two full rotations
+            const y = (index / 20) * 3 - 1.5 // Spread top to bottom
+
+            const cardData = {
+                title: (item.title_english || item.title).substring(0, 18),
+                desc: item.genres[0]?.name || 'Anime',
+                img: item.images.jpg.large_image_url,
+                category: 'SERIES',
+                angle: angle,
+                y: y
+            }
+            create3DCard(cardData)
+        })
+    } catch (e) {
+        console.error("Sphere error", e)
+    }
+}
+
+initSphereContent()

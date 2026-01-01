@@ -44,7 +44,7 @@
       <a href="#">COMMUNITY</a>
     </div>
     <div class="actions">
-      <button>LOGIN</button>
+      <button class="login-btn">LOGIN</button>
     </div>
     <div class="mobile-menu-btn">
       <span></span>
@@ -52,6 +52,9 @@
       <span></span>
     </div>
   </nav>
+
+  <!-- Exit Button for Pages -->
+  <div id="global-exit" class="exit-btn">×</div>
 
   <div class="hero ui-layer">
     <h1>
@@ -70,15 +73,30 @@
 
     <!-- SERIES PAGE -->
     <div id="page-SERIES" class="page-section">
-      <div class="media-grid">
-        <!-- Populated via JS -->
+      <div class="media-container" id="series-rows">
+        <!-- Rows like "Trending", "Action", etc. injected by JS -->
+        <div class="category-row">
+          <h2 class="category-title">Trending Series</h2>
+          <div class="scroll-container" id="series-trending"></div>
+        </div>
+        <div class="category-row">
+          <h2 class="category-title">Action & Adventure</h2>
+          <div class="scroll-container" id="series-action"></div>
+        </div>
       </div>
     </div>
 
     <!-- MOVIES PAGE -->
     <div id="page-MOVIES" class="page-section">
-      <div class="media-grid">
-        <!-- Populated via JS -->
+      <div class="media-container" id="movies-rows">
+        <div class="category-row">
+          <h2 class="category-title">Top Movies</h2>
+          <div class="scroll-container" id="movies-top"></div>
+        </div>
+        <div class="category-row">
+          <h2 class="category-title">Anime Classics</h2>
+          <div class="scroll-container" id="movies-classics"></div>
+        </div>
       </div>
     </div>
 
@@ -90,23 +108,13 @@
           <h2>Solo Leveling Season 2 Announced</h2>
           <p>The dawn of the new era continues. Preparation for the island raid begins now.</p>
         </div>
-        <div class="news-item">
-          <span class="news-date">2025-12-28</span>
-          <h2>Bleach TYBW: The Conflict Intensifies</h2>
-          <p>New key visual released for the upcoming cour. The battle between Quincies and Soul Reapers reaches its
-            peak.</p>
-        </div>
-        <div class="news-item">
-          <span class="news-date">2025-12-15</span>
-          <h2>Aurora Platform Update v2.0</h2>
-          <p>We've improved the holographic engine stability and added support for 8K neural rendering.</p>
-        </div>
+        <!-- ... more items ... -->
       </div>
     </div>
 
     <!-- COMMUNITY PAGE -->
     <div id="page-COMMUNITY" class="page-section">
-      <div class="community-grid">
+      <div class="community-grid" id="comm-container">
         <div class="comm-sidebar">
           <h3>CHANNELS</h3>
           <p># general</p>
@@ -115,17 +123,29 @@
           <p style="color:var(--color-cyan)"># announcements</p>
         </div>
         <div class="comm-feed">
-          <div class="comm-post">
-            <span class="user-tag">@HunterFan99</span>
-            <p>Has anyone found the easter egg in the HxH card yet?</p>
+          <div class="comm-messages" id="chat-messages">
+            <div class="comm-post">
+              <span class="user-tag">@HunterFan99</span>
+              <p>Has anyone found the easter egg in the HxH card yet?</p>
+            </div>
+            <div class="comm-post">
+              <span class="user-tag">@SoulReaper</span>
+              <p>The new UI is insane! Matches the vibe of the Soul Society perfectly.</p>
+            </div>
           </div>
-          <div class="comm-post">
-            <span class="user-tag">@SoulReaper</span>
-            <p>The new UI is insane! Matches the vibe of the Soul Society perfectly.</p>
-          </div>
-          <div class="comm-post">
-            <span class="user-tag">@TitanShifter</span>
-            <p>Waiting for the new movie drop on Friday...</p>
+
+          <div class="chat-input-area" id="chat-controls">
+            <input type="text" placeholder="Send a message..." id="chat-input" disabled>
+            <button id="chat-send">SEND</button>
+
+            <!-- Locked Overlay -->
+            <div class="chat-overlay" id="chat-lock">
+              <div class="lock-message">
+                <h3>JOIN THE CONVERSATION</h3>
+                <p>Login to your Aurora account to participate in the community.</p>
+                <button class="cta-btn" onclick="window.router('ACCOUNT')">LOGIN NOW</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
